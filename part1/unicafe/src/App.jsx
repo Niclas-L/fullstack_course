@@ -11,7 +11,9 @@ const Statistics = (props) => {
     return getTotal() === 0 ? 0 : (props.good / getTotal()) * 100;
   };
 
-  return (
+  return getTotal() === 0 ? (
+    <p>No feedback given</p>
+  ) : (
     <>
       <h1>statistics</h1>
       <p>Good: {props.good}</p>
