@@ -1,18 +1,16 @@
 const App = () => {
   const Course = ({ course }) => {
+    const total = course.parts.reduce((sum, part) => sum + part.exercises, 0);
+    console.log("total", total);
     return (
       <div>
-        {console.log("Course component")}
         <h2>{course.name}</h2>
         {course.parts.map((part) => (
           <p key={part.id}>
             {part.name} {part.exercises}
           </p>
         ))}
-        <b>
-          total of {course.parts.reduce((sum, part) => sum + part.exercises, 0)}{" "}
-          exercises
-        </b>
+        <b>total of {total} exercises</b>
       </div>
     );
   };
