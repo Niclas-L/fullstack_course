@@ -9,6 +9,11 @@ const App = () => {
     console.log("button clicked", event.target);
     console.log("persons:", persons);
     console.log("newName:", newName);
+    if (existingPerson(newName)) {
+      alert(`${newName} is already added to phonebook`);
+      setNewName("");
+      return;
+    }
     const personObject = {
       name: newName,
     };
@@ -21,6 +26,10 @@ const App = () => {
     setNewName(event.target.value);
   };
 
+  const existingPerson = (name) => {
+    return persons.find((person) => person.name === name);
+  };
+
   const Person = ({ person }) => {
     return <p>{person.name}</p>;
   };
@@ -31,7 +40,7 @@ const App = () => {
 
       <form onSubmit={addPerson}>
         <div>
-          name: <input onChange={handleNameChange} />
+          name: <input value={newName} onChange={handleNameChange} />
         </div>
         <div>
           <button type="submit">add</button>
