@@ -1,4 +1,6 @@
 import { useState } from "react";
+import Search from "./components/Search";
+import AddPerson from "./components/AddPerson";
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -14,22 +16,13 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault();
     console.log("button clicked", event.target);
-    console.log("persons:", persons);
-    console.log("newName:", newName);
-    console.log("newNumber:", newNumber);
-    if (existingPerson(newName)) {
-      alert(`${newName} is already added to phonebook`);
-      setNewName("");
-      setNewNumber("");
-      return;
+    const newPerson = AddPerson(persons, newName, newNumber);
+    if (newPerson) {
+      setPersons(persons.concat(newPerson));
     }
-    const personObject = {
-      name: newName,
-      number: newNumber,
-    };
-    setPersons(persons.concat(personObject));
     setNewName("");
     setNewNumber("");
+    return;
   };
 
   const handleNameChange = (event) => {
@@ -47,28 +40,13 @@ const App = () => {
     setSearchTerm(event.target.value);
   };
 
-  const searchResults = persons.filter((person) =>
-    person.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const existingPerson = (name) => {
-    return persons.find((person) => person.name === name);
-  };
-
-  const Person = ({ person }) => {
-    return (
-      <p>
-        {person.name} {person.number}
-      </p>
-    );
-  };
-
   return (
     <div>
       <h2>Phonebook</h2>
 
       <div>
-        filter shown with <input value={searchTerm} onChange={handleSearchChange}></input>
+        filter shown with{" "}
+        <input value={searchTerm} onChange={handleSearchChange}></input>
       </div>
 
       <h2>add a new</h2>
@@ -86,9 +64,7 @@ const App = () => {
 
       <h2>Numbers</h2>
       <div>
-        {searchResults.map((person) => (
-          <Person key={person.name} person={person} />
-        ))}
+        <Search persons={persons} searchTerm={searchTerm} />
       </div>
     </div>
   );
