@@ -25,6 +25,11 @@ const App = () => {
     const newPerson = AddPerson(persons, newName, newNumber);
     if (newPerson) {
       setPersons(persons.concat(newPerson));
+      axios
+        .post("http://localhost:3001/persons", newPerson)
+        .then((response) => {
+          console.log("response:", response);
+        });
     }
     setNewName("");
     setNewNumber("");
