@@ -9,7 +9,9 @@ const Search = (props) => {
       )
     : [];
 
-  return <Person searchResults={searchResults} />;
+  return (
+    <Person searchResults={searchResults} deletePerson={props.deletePerson} />
+  );
 };
 
 export default Search;

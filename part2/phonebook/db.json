@@ -21,18 +21,14 @@
       "id": 4
     },
     {
-      "id": 5
-    },
-    {
+      "name": "Kalle Anka",
+      "number": "52343-23423",
       "id": 6
     },
     {
+      "name": "Mickey Mouse",
+      "number": "2356-23416",
       "id": 7
-    },
-    {
-      "name": "testPerson",
-      "number": "123456789",
-      "id": 8
     }
   ]
 }

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import Search from "./components/Search";
 import AddPerson from "./components/AddPerson";
+import personsService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -9,31 +10,24 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const hook = () => {
-    console.log("effect");
-    axios.get("http://localhost:3001/persons").then((response) => {
-      console.log("promise fulfilled");
-      setPersons(response.data);
+  useEffect(() => {
+    personsService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
     });
-  };
-
-  useEffect(hook, []);
+  }, []);
 
   const addPerson = (event) => {
     event.preventDefault();
-    console.log("button clicked", event.target);
     const newPerson = AddPerson(persons, newName, newNumber);
     if (newPerson) {
       setPersons(persons.concat(newPerson));
-      axios
-        .post("http://localhost:3001/persons", newPerson)
-        .then((response) => {
-          console.log("response:", response);
-        });
+      personsService.create(newPerson).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+      });
+      setNewName("");
+      setNewNumber("");
+      return;
     }
-    setNewName("");
-    setNewNumber("");
-    return;
   };
 
   const handleNameChange = (event) => {
@@ -49,6 +43,14 @@ const App = () => {
   const handleSearchChange = (event) => {
     console.log("Search event.target.value:", event.target.value);
     setSearchTerm(event.target.value);
+  };
+
+  const deletePerson = (id) => {
+    const person = persons.find((p) => p.id === id);
+    if (window.confirm(`Delete ${person.name}?`)) {
+      personsService.remove(id);
+      setPersons(persons.filter((p) => p.id !== id));
+    }
   };
 
   return (
@@ -75,7 +77,7 @@ const App = () => {
 
       <h2>Numbers</h2>
       <div>
-        <Search persons={persons} searchTerm={searchTerm} />
+        <Search persons={persons} searchTerm={searchTerm} deletePerson={deletePerson}/>
       </div>
     </div>
   );
