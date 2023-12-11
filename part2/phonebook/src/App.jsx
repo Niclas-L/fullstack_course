@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
 import Search from "./components/Search";
 import AddPerson from "./components/AddPerson";
 import personsService from "./services/persons";
@@ -18,7 +17,7 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
-    const newPerson = AddPerson(persons, newName, newNumber);
+    const newPerson = AddPerson(persons, newName, newNumber, deletePerson);
     if (newPerson) {
       setPersons(persons.concat(newPerson));
       personsService.create(newPerson).then((returnedPerson) => {
@@ -31,23 +30,25 @@ const App = () => {
   };
 
   const handleNameChange = (event) => {
-    console.log("Name event.target.value:", event.target.value);
     setNewName(event.target.value);
   };
 
   const handleNumberChange = (event) => {
-    console.log("Number event.target.value:", event.target.value);
     setNewNumber(event.target.value);
   };
 
   const handleSearchChange = (event) => {
-    console.log("Search event.target.value:", event.target.value);
     setSearchTerm(event.target.value);
   };
 
-  const deletePerson = (id) => {
+  const deletePerson = (id, method) => {
     const person = persons.find((p) => p.id === id);
-    if (window.confirm(`Delete ${person.name}?`)) {
+    if (method === 1) {
+      if (window.confirm(`Delete ${person.name}?`)) {
+        personsService.remove(id);
+        setPersons(persons.filter((p) => p.id !== id));
+      }
+    } else {
       personsService.remove(id);
       setPersons(persons.filter((p) => p.id !== id));
     }
@@ -77,7 +78,11 @@ const App = () => {
 
       <h2>Numbers</h2>
       <div>
-        <Search persons={persons} searchTerm={searchTerm} deletePerson={deletePerson}/>
+        <Search
+          persons={persons}
+          searchTerm={searchTerm}
+          deletePerson={deletePerson}
+        />
       </div>
     </div>
   );
