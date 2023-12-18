@@ -1,4 +1,4 @@
-const AddPerson = (persons, newName, newNumber, deletePerson) => {
+const AddPerson = (persons, newName, newNumber, updatePerson) => {
   const existing = existingPerson(persons, newName);
   const personObject = {
     name: newName,
@@ -15,8 +15,8 @@ const AddPerson = (persons, newName, newNumber, deletePerson) => {
           `${newName} is already added to phonebook, replace the old number with a new one?`
         )
       ) {
-        deletePerson(existing.id, 0);
-        return personObject;
+        updatePerson(existing.id, personObject);
+        return;
       }
     }
   }

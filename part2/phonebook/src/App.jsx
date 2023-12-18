@@ -17,7 +17,7 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
-    const newPerson = AddPerson(persons, newName, newNumber, deletePerson);
+    const newPerson = AddPerson(persons, newName, newNumber, updatePerson);
     if (newPerson) {
       setPersons(persons.concat(newPerson));
       personsService.create(newPerson).then((returnedPerson) => {
@@ -41,17 +41,20 @@ const App = () => {
     setSearchTerm(event.target.value);
   };
 
-  const deletePerson = (id, method) => {
+  const deletePerson = (id) => {
     const person = persons.find((p) => p.id === id);
-    if (method === 1) {
-      if (window.confirm(`Delete ${person.name}?`)) {
-        personsService.remove(id);
-        setPersons(persons.filter((p) => p.id !== id));
-      }
-    } else {
+    if (window.confirm(`Delete ${person.name}?`)) {
       personsService.remove(id);
       setPersons(persons.filter((p) => p.id !== id));
     }
+  };
+
+  const updatePerson = (id, person) => {
+    personsService.update(id, person).then((returnedPerson) => {
+      setPersons(
+        persons.map((person) => (person.id !== id ? person : returnedPerson))
+      );
+    });
   };
 
   return (
