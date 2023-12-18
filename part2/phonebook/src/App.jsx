@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Search from "./components/Search";
 import AddPerson from "./components/AddPerson";
 import Notification from "./components/Notification";
+import Error from "./components/Error";
 import personsService from "./services/persons";
 
 const App = () => {
@@ -10,6 +11,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [notificationMessage, setNotificationMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     personsService.getAll().then((initialPersons) => {
@@ -28,9 +30,7 @@ const App = () => {
       setNewName("");
       setNewNumber("");
       setNotificationMessage(`Added ${newPerson.name}`);
-      setTimeout(() => {
-        setNotificationMessage(null);
-      }, 5000);
+      notificationTimeout();
       return;
     }
   };
@@ -50,27 +50,43 @@ const App = () => {
   const deletePerson = (id) => {
     const person = persons.find((p) => p.id === id);
     if (window.confirm(`Delete ${person.name}?`)) {
-      personsService.remove(id);
+      personsService.remove(id).catch((error) => {
+        setErrorMessage(
+          `Information of ${person.name} has already been removed from server`
+        );
+        notificationTimeout();
+      });
       setPersons(persons.filter((p) => p.id !== id));
       setNotificationMessage(`Deleted ${person.name}`);
-      setTimeout(() => {
-        setNotificationMessage(null);
-      }, 5000);
+      notificationTimeout();
     }
   };
 
   const updatePerson = (id, person) => {
-    personsService.update(id, person).then((returnedPerson) => {
-      setPersons(
-        persons.map((person) => (person.id !== id ? person : returnedPerson))
-      );
-    });
+    personsService
+      .update(id, person)
+      .then((returnedPerson) => {
+        setPersons(
+          persons.map((person) => (person.id !== id ? person : returnedPerson))
+        );
+      })
+      .catch((error) => {
+        setErrorMessage(
+          `Information of ${person.name} has already been removed from server`
+        );
+        notificationTimeout();
+      });
     setNotificationMessage(`Updated ${person.name}`);
-    setTimeout(() => {
-      setNotificationMessage(null);
-    }, 5000);
+    notificationTimeout();
     setNewName("");
     setNewNumber("");
+  };
+
+  const notificationTimeout = () => {
+    setTimeout(() => {
+      setNotificationMessage(null);
+      setErrorMessage(null);
+    }, 5000);
   };
 
   return (
