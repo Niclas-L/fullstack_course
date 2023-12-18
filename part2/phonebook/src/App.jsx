@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Search from "./components/Search";
 import AddPerson from "./components/AddPerson";
+import Notification from "./components/Notification";
 import personsService from "./services/persons";
 
 const App = () => {
@@ -8,6 +9,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [notificationMessage, setNotificationMessage] = useState(null);
 
   useEffect(() => {
     personsService.getAll().then((initialPersons) => {
@@ -25,6 +27,10 @@ const App = () => {
       });
       setNewName("");
       setNewNumber("");
+      setNotificationMessage(`Added ${newPerson.name}`);
+      setTimeout(() => {
+        setNotificationMessage(null);
+      }, 5000);
       return;
     }
   };
@@ -46,6 +52,10 @@ const App = () => {
     if (window.confirm(`Delete ${person.name}?`)) {
       personsService.remove(id);
       setPersons(persons.filter((p) => p.id !== id));
+      setNotificationMessage(`Deleted ${person.name}`);
+      setTimeout(() => {
+        setNotificationMessage(null);
+      }, 5000);
     }
   };
 
@@ -55,11 +65,19 @@ const App = () => {
         persons.map((person) => (person.id !== id ? person : returnedPerson))
       );
     });
+    setNotificationMessage(`Updated ${person.name}`);
+    setTimeout(() => {
+      setNotificationMessage(null);
+    }, 5000);
+    setNewName("");
+    setNewNumber("");
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={notificationMessage} />
 
       <div>
         filter shown with{" "}
