@@ -80,15 +80,21 @@ const App = () => {
         setPersons(
           persons.map((person) => (person.id !== id ? person : returnedPerson))
         );
+        setNotificationMessage(`Updated ${person.name}`);
+        notificationTimeout();
       })
       .catch((error) => {
-        setErrorMessage(
-          `Information of ${person.name} has already been removed from server`
-        );
-        notificationTimeout();
+        if (error instanceof ValidationError) {
+          console.log("frontend", error.response.data.error);
+          setErrorMessage(error.response.data.error);
+          notificationTimeout();
+        } else {
+          setErrorMessage(
+            `Information of ${person.name} has already been removed from server`
+          );
+          notificationTimeout();
+        }
       });
-    setNotificationMessage(`Updated ${person.name}`);
-    notificationTimeout();
     setNewName("");
     setNewNumber("");
   };
