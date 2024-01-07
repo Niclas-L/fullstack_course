@@ -24,14 +24,25 @@ const App = () => {
     const newPerson = AddPerson(persons, newName, newNumber, updatePerson);
     if (newPerson) {
       setPersons(persons.concat(newPerson));
-      personsService.create(newPerson).then((returnedPerson) => {
-        setPersons(persons.concat(returnedPerson));
-      });
-      setNewName("");
-      setNewNumber("");
-      setNotificationMessage(`Added ${newPerson.name}`);
-      notificationTimeout();
-      return;
+      personsService
+        .create(newPerson)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson));
+          setNotificationMessage(`Added ${newPerson.name}`);
+          notificationTimeout();
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((error) => {
+          personsService.getAll().then((initialPersons) => {
+            setPersons(initialPersons);
+          });
+          console.log("frontend", error.response.data.error);
+          setErrorMessage(error.response.data.error);
+          notificationTimeout();
+          setNewName("");
+          setNewNumber("");
+        });
     }
   };
 
@@ -94,6 +105,7 @@ const App = () => {
       <h2>Phonebook</h2>
 
       <Notification message={notificationMessage} />
+      <Error message={errorMessage} />
 
       <div>
         filter shown with{" "}
